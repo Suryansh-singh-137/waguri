@@ -1,4 +1,4 @@
-from state import ResearchState
+from state import Researchstate
 from llm import llm
 from langchain_core.messages import SystemMessage, HumanMessage
 from tavily import TavilyClient
@@ -6,7 +6,7 @@ import os
 
 tavily = TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
 
-def research_agent(state: ResearchState):
+def research_agent(state: Researchstate):
     startup_name = state["startup_name"]
     
     # multiple targeted searches
@@ -36,5 +36,5 @@ def research_agent(state: ResearchState):
         SystemMessage(content=system),
         HumanMessage(content=f"Startup: {startup_name}\n\nRaw research:\n{all_findings}")
     ])
-    
+
     return {"research_findings": result.content}

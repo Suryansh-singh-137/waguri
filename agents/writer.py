@@ -2,7 +2,7 @@ from   state import Researchstate
 from  llm  import llm
 from langchain_core.messages import SystemMessage, HumanMessage
 def  writerAgent(state:Researchstate):
-  research =  state['research_finding']
+  research =  state['research_findings']
   timeline  = state['timeline']
   critic  = state['critics_argument']
   devil  =  state['devil_argument']
@@ -39,7 +39,17 @@ def  writerAgent(state:Researchstate):
 
   Write with clarity and conviction. This is journalism, not a bullet point dump."""
 
-  human_msg = f"""research finding  by  research agent {research}and timeline  from timeline agent is {timeline} devil argument from devilAgent {devil} crtic from  crtitc agent {critic}"""
+  human_msg = f"""Research findings from research agent:
+{research}
+
+Timeline from timeline agent:
+{timeline}
+
+Devil's advocate argument:
+{devil}
+
+Critic's analysis:
+{critic}"""
   result = llm.invoke(
     [SystemMessage(content=system),HumanMessage(content=human_msg)]
   )

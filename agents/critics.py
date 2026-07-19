@@ -2,7 +2,7 @@ from   state import Researchstate
 from  llm  import llm
 from langchain_core.messages import SystemMessage, HumanMessage
 def  criticAgent(state:Researchstate):
-  research =  state['research_finding']
+  research =  state['research_findings']
   timeline  = state['timeline']
   system = """You are a Critic Agent — a ruthless, evidence-based analyst specializing in startup failures.
 
@@ -16,7 +16,11 @@ def  criticAgent(state:Researchstate):
   4. Secondary causes that accelerated the failure
 
   Be brutal. Be specific. Use evidence."""
-  human_msg = f"""research finding  by  research agent {research}and timeline  from timeline agent is {timeline}"""
+  human_msg = f"""Research findings from research agent:
+{research}
+
+Timeline from timeline agent:
+{timeline}"""
   result = llm.invoke(
     [SystemMessage(content=system),HumanMessage(content=human_msg)]
   )

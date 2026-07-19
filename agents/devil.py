@@ -2,7 +2,7 @@ from   state import Researchstate
 from  llm  import llm
 from langchain_core.messages import SystemMessage, HumanMessage
 def  devilAgent(state:Researchstate):
-  research =  state['research_finding']
+  research =  state['research_findings']
   timeline  = state['timeline']
   system = """You are the Devil's Advocate Agent — an optimistic contrarian who argues that this startup could have survived.
 
@@ -16,7 +16,11 @@ def  devilAgent(state:Researchstate):
   4. The version of this company that succeeds (what it looks like)
 
 Be genuinely convincing. Steel-man their position."""
-  human_msg = f"""research finding  by  research agent {research}and timeline  from timeline agent is {timeline}"""
+  human_msg = f"""Research findings from research agent:
+{research}
+
+Timeline from timeline agent:
+{timeline}"""
   result = llm.invoke(
     [SystemMessage(content=system),HumanMessage(content=human_msg)]
   )
