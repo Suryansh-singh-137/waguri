@@ -2,6 +2,7 @@ from   state import Researchstate
 from  llm  import llm
 from langchain_core.messages import SystemMessage, HumanMessage
 def  writerAgent(state:Researchstate):
+  print("writer agent  running  ....")
   research =  state['research_findings']
   timeline  = state['timeline']
   critic  = state['critics_argument']

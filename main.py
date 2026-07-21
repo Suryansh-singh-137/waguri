@@ -7,12 +7,15 @@ def main():
     startup_name = input("Enter startup name: ")
     
     result = app.invoke({
-        "startup_name": startup_name,
-        "": "",
-        "timeline": "",
-        "devil_argument": "",
-        "critics_argument": "",
-        "final_report": ""
+            "startup_name": startup_name,
+            "": "",
+            "timeline": "",
+            "devil_argument": "",
+            "critics_argument": "",
+            "final_report": "",
+            "research_attempts":0,
+            "research_quality":""
+          
     })
     
     print("\n" + "="*50)

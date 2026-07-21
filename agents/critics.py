@@ -2,6 +2,7 @@ from   state import Researchstate
 from  llm  import llm
 from langchain_core.messages import SystemMessage, HumanMessage
 def  criticAgent(state:Researchstate):
+  print("criticAgent running.....")
   research =  state['research_findings']
   timeline  = state['timeline']
   system = """You are a Critic Agent — a ruthless, evidence-based analyst specializing in startup failures.

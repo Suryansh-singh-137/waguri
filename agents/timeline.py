@@ -2,6 +2,7 @@ from   state import Researchstate
 from  llm  import llm
 from langchain_core.messages import SystemMessage, HumanMessage
 def  timelineAgent(state:Researchstate):
+  print("timeline agent  running  ...")
 
   system = """You are a Timeline Agent specialized in reconstructing 
   the chronological history of startups. Given research findings, 

@@ -7,6 +7,7 @@ import os
 tavily = TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
 
 def research_agent(state: Researchstate):
+    print("research agent running  .....")
     startup_name = state["startup_name"]
     
     # multiple targeted searches

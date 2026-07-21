@@ -6,3 +6,5 @@ class Researchstate(TypedDict):
   devil_argument :str 
   critics_argument :str 
   final_report:str  
+  research_quality:str 
+  research_attempts:int
