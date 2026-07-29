@@ -16,6 +16,18 @@ Waguri automates deep postmortem research using a multi-agent system where each 
 
 ---
 
+<<<<<<< HEAD
+=======
+
+
+## Architecture
+<img width="1927" height="3001" alt="image" src="https://github.com/user-attachments/assets/9edb709f-1553-4701-bd50-8b043dc5d489" />
+
+
+
+---
+
+>>>>>>> fd5cbc5c2ff2ec23dea7b811202b5d2b51dcc7ee
 ## How It Works
 
 You type a name. The system does the rest.
@@ -184,9 +196,13 @@ Enter any startup name. Report saves automatically.
 | Fab.com  | Grew too fast, pivoted too late                    |
 | WeWork   | IPO collapse, cult of personality                  |
 
+<<<<<<< HEAD
 ---
 
 ## Architecture
+=======
+
+>>>>>>> fd5cbc5c2ff2ec23dea7b811202b5d2b51dcc7ee
 
 
 ---
