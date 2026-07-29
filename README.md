@@ -1,5 +1,13 @@
 # Waguri — Dead Startup Postmortem Engine
 
+<div align="center">
+  <img src="./assets/logo.svg" alt="Waguri Logo" width="200">
+  
+  **Automated postmortem research for failed startups**
+  
+  *Type a startup name. Six specialized AI agents research it, debate it, and produce a structured postmortem.*
+</div>
+
 Most startup failures get a tweet and a Medium post.
 
 Waguri gives them a trial.
@@ -16,18 +24,12 @@ Waguri automates deep postmortem research using a multi-agent system where each 
 
 ---
 
-<<<<<<< HEAD
-=======
-
-
 ## Architecture
-<img width="1927" height="3001" alt="image" src="https://github.com/user-attachments/assets/9edb709f-1553-4701-bd50-8b043dc5d489" />
 
-
+<img width="1927" height="3001" alt="Waguri Multi-Agent Architecture Diagram" src="https://github.com/user-attachments/assets/9edb709f-1553-4701-bd50-8b043dc5d489" />
 
 ---
 
->>>>>>> fd5cbc5c2ff2ec23dea7b811202b5d2b51dcc7ee
 ## How It Works
 
 You type a name. The system does the rest.
@@ -40,8 +42,8 @@ Enter startup name: Quibi
 [2/6] Supervisor evaluating research quality...
 [3/6] Building timeline...
 [4/6] Devil's Advocate building case for survival...
-[4/6] Critic identifying cause of death...
-[5/6] Writing final report...
+[5/6] Critic identifying cause of death...
+[6/6] Writing final report...
 
 Report saved to quibi_postmortem.md
 ```
@@ -52,33 +54,35 @@ Report saved to quibi_postmortem.md
 
 Six specialized agents, each with a completely distinct role:
 
-### Research Agent
+### 🔍 Research Agent
 
 Runs 5 targeted web searches across different angles — founding story, funding history, what went wrong, founder interviews, and public perception. Synthesizes raw search results into a clean structured research note.
 
-### Supervisor Agent
+### 👁️ Supervisor Agent
 
 Evaluates whether the research is sufficient to produce a meaningful postmortem. If key information is missing — funding details, cause of failure, timeline anchors — it sends the Research Agent back to search again with more targeted queries. Guards against infinite loops with a maximum retry count. This is the orchestration layer that makes the system dynamic rather than a fixed pipeline.
 
-### Timeline Agent
+### 📅 Timeline Agent
 
 Takes the research note and reconstructs the chronological history of the company — founding, funding rounds, product launches, pivots, controversies, and shutdown. Outputs a structured timeline that both debate agents use as their source of truth.
 
-### Devil's Advocate Agent
+### ✅ Devil's Advocate Agent
 
 Makes the strongest possible case that the startup could have survived. Finds what they got right, identifies realistic pivot opportunities, and argues which external factors were genuinely beyond their control. Runs in parallel with the Critic.
 
-### Critic Agent
+### ❌ Critic Agent
 
 Identifies the real cause of death — not the symptom ("ran out of money") but the underlying flaw that made failure likely from early on. Finds the exact moment the company was doomed. Runs in parallel with the Devil's Advocate.
 
-### Writer Agent
+### ✍️ Writer Agent
 
 Reads everything — research, timeline, both sides of the debate — and synthesizes it into a structured markdown report with a verdict, ranked causes of death, and lessons for founders.
 
 ---
 
 ## Output Format
+
+Every postmortem follows this structure:
 
 ```markdown
 # [Startup] — Postmortem
@@ -100,7 +104,7 @@ Reads everything — research, timeline, both sides of the debate — and synthe
 ## Lessons for Founders
 ```
 
-Saved automatically as `[startup]_postmortem.md`.
+Reports are saved automatically as `[startup]_postmortem.md`.
 
 ---
 
@@ -146,16 +150,21 @@ waguri/
 │   ├── critic.py        # Critic — cause of death analysis
 │   └── writer.py        # Final report synthesis
 │
+├── assets/
+│   ├── logo.svg         # Vector logo (main source of truth)
+│   └── logo.png         # Raster fallback
+│
 ├── .env                 # API keys (never commit this)
 ├── pyproject.toml       # Dependencies
-└── .gitignore
+├── .gitignore
+└── README.md
 ```
 
 ---
 
 ## Getting Started
 
-**1. Clone and install**
+### 1. Clone and Install
 
 ```bash
 git clone https://github.com/yourusername/waguri
@@ -163,19 +172,21 @@ cd waguri
 uv sync
 ```
 
-**2. Set up `.env`**
+### 2. Set Up Environment Variables
+
+Create a `.env` file in the project root:
 
 ```
-GROQ_API_KEY=your_key
-TAVILY_API_KEY=your_key
+GROQ_API_KEY=your_groq_api_key
+TAVILY_API_KEY=your_tavily_api_key
 ```
 
-Get keys at:
+**Get free API keys:**
 
-- [console.groq.com](https://console.groq.com) — free
-- [tavily.com](https://tavily.com) — free tier, 1000 searches/month
+- **Groq:** [console.groq.com](https://console.groq.com) — free tier
+- **Tavily:** [tavily.com](https://tavily.com) — free tier, 1000 searches/month
 
-**3. Run**
+### 3. Run
 
 ```bash
 uv run main.py
@@ -187,23 +198,14 @@ Enter any startup name. Report saves automatically.
 
 ## Example Startups to Try
 
-| Startup  | Why Interesting                                    |
-| -------- | -------------------------------------------------- |
-| Quibi    | $1.75B raised, failed in 6 months                  |
-| Vine     | Killed by its own parent company                   |
-| Theranos | Fraud vs genuine belief — the debate writes itself |
-| Juicero  | The $400 juice press that didn't need to exist     |
-| Fab.com  | Grew too fast, pivoted too late                    |
-| WeWork   | IPO collapse, cult of personality                  |
-
-<<<<<<< HEAD
----
-
-## Architecture
-=======
-
->>>>>>> fd5cbc5c2ff2ec23dea7b811202b5d2b51dcc7ee
-
+| Startup      | Why It's Interesting                               |
+| ------------ | -------------------------------------------------- |
+| **Quibi**    | $1.75B raised, failed in 6 months                  |
+| **Vine**     | Killed by its own parent company                   |
+| **Theranos** | Fraud vs genuine belief — the debate writes itself |
+| **Juicero**  | $400 juice press that didn't need to exist         |
+| **Fab.com**  | Grew too fast, pivoted too late                    |
+| **WeWork**   | IPO collapse, cult of personality                  |
 
 ---
 
@@ -211,10 +213,24 @@ Enter any startup name. Report saves automatically.
 
 This project taught me multi-agent orchestration in practice — not from tutorials but from real design decisions:
 
-- Why shared state is better than separate agent states
-- When to use parallel edges vs the Send API
-- How supervisor loops turn a pipeline into a true orchestrated system
-- How specialized system prompts change output quality dramatically
-- Why smaller models work better for evaluation tasks (supervisor uses 8b, not 70b)
+- **Shared state is better than separate agent states** — centralized truth reduces bugs and coordination overhead
+- **When to use parallel edges vs the Send API** — Devil's Advocate and Critic can run simultaneously, speeding up debate
+- **How supervisor loops turn a pipeline into a true orchestrated system** — not a fixed chain, but dynamic retry logic
+- **How specialized system prompts change output quality dramatically** — each agent's personality matters
+- **Why smaller models work better for evaluation tasks** — supervisor uses 8B, not 70B, and still catches quality issues
 
 ---
+
+## Contributing
+
+This is an open-source project. Contributions welcome!
+
+---
+
+## License
+
+MIT License — see LICENSE file for details.
+
+---
+
+**Built with:** LangGraph • Tavily • Groq • Python
