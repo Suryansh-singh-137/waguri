@@ -221,16 +221,4 @@ This project taught me multi-agent orchestration in practice — not from tutori
 
 ---
 
-## Contributing
 
-This is an open-source project. Contributions welcome!
-
----
-
-## License
-
-MIT License — see LICENSE file for details.
-
----
-
-**Built with:** LangGraph • Tavily • Groq • Python
