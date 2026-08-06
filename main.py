@@ -8,7 +8,7 @@ def main():
     
     result = app.invoke({
             "startup_name": startup_name,
-            "": "",
+            "research_findings": "",
             "timeline": "",
             "devil_argument": "",
             "critics_argument": "",
