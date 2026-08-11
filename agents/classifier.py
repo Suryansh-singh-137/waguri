@@ -11,7 +11,7 @@ def classifierAgent(state: Researchstate):
     print("classifier agent is running...")
     startup_name = state["startup_name"]
 
-    # Dual-query strategy for competing signals
+    \
     queryA = f"{startup_name} startup shut down closed postmortem defunct"
     queryB = f"{startup_name} startup funding launch features hiring 2025 2026"
 
@@ -39,13 +39,9 @@ def classifierAgent(state: Researchstate):
 === VITALITY SEARCH RESULTS ===
 {formatted_B}"""
 
-    # Bind the LLM to the Pydantic schema
+   
     structured_llm = llm.with_structured_output(StartupClassification)
 
-    # Explicit rule-based system prompt
- # ... (keep your Tavily searches and short-circuit logic the same) ...
-
-    # Explicit rule-based system prompt
     system = f"""You are a Startup Classification Agent. Your task is to determine the current operational status of the specific startup named "{startup_name}".
 
 Classification Rules:
@@ -64,13 +60,12 @@ CRITICAL: AI models naturally want to classify active early-stage companies as "
         ]
     )
 
-    # --- NEW: AI TELEMETRY (Read the LLM's mind) ---
     print(f"\n--> [DEBUG] LLM chose: {result.status}")
     print(f"--> [DEBUG] Reason: {result.reasoning}")
     print(f"--> [DEBUG] Confidence: {result.confidence_score}\n")
-    # -----------------------------------------------
 
-    # Confidence Fallback Logic
+
+  
     final_status = result.status
     if result.confidence_score < 0.6:
         final_status = "pre_launch"

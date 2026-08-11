@@ -16,6 +16,8 @@ class Researchstate(TypedDict):
   core_concept:str
   market_competitors:str
   risk_simulation:str
+  traction_info:str
+  market_info:str
 # for classsifying agent
 class StartupClassification(BaseModel):
     status: Literal["dead", "alive", "pre_launch"] = Field(description="The operational status of the startup")

@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 load_dotenv()
-
+import json
 from graph import app
 
 def main():
@@ -17,6 +17,23 @@ def main():
             "research_quality":""
           
     })
+    #collecting evaluation data
+    eval_data = {
+    "startup_name": startup_name,
+    "startup_status": result.get("startup_status"),
+    "input": f"Analyze startup: {startup_name}",
+    "retrieval_context": [
+        result.get("core_concept", ""),
+        result.get("market_competitors", ""),
+        result.get("risk_simulation", ""),
+        result.get("traction_info", ""),
+        result.get("market_info", ""),
+    ],
+    "actual_output": result.get("final_report", "")
+    }
+    with open("latest_eval_data.json", "w") as f:
+        json.dump(eval_data, f, indent=2)
+
     
     print("\n" + "="*50)
     print(result["final_report"])

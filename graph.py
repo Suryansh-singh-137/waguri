@@ -10,12 +10,10 @@ from agents.supervisor import supervisor_agent
 from agents.idea_validator import ideaValidatorAgent
 from agents.risk_simulator import riskSimulatorAgent
 from agents.pre_mortem_writer import preMortemWriterAgent
+from  agents.market import marketAgent
+from  agents.traction import tractionAgent
+from  agents.progress_writer import progressWriterAgent
 
-# --- DUMMY NODES FOR TESTING ---
-def alive_flow_node(state: Researchstate):
-    print("\n--> [ROUTED TO ALIVE FLOW] Startup is currently active. (Placeholder)")
-    # Writing a dummy report to state just so you can see the output when testing
-    return {"final_report": "TEST: This startup is still alive. Progress report flow will go here."}
 
 
 def route_after_supervisor(state: Researchstate):
@@ -31,7 +29,7 @@ def route_by_status(state: Researchstate) -> str:
     if status == "dead":
         return "research" 
     elif status == "alive":
-        return "alive_flow"
+        return ["traction", "market"]
     elif status == "pre_launch":
         return "pre_mortem_flow"
         
@@ -51,8 +49,10 @@ graph.add_node("idea_validator", ideaValidatorAgent)
 graph.add_node("risk_simulator", riskSimulatorAgent)
 graph.add_node("pre_mortem_writer", preMortemWriterAgent)
 
-# Add the dummy nodes
-graph.add_node("alive_flow", alive_flow_node)
+
+graph.add_node("traction", tractionAgent)
+graph.add_node("market", marketAgent)
+graph.add_node("progress_writer", progressWriterAgent)
 
 
 # Graph Wiring
@@ -63,7 +63,8 @@ graph.add_conditional_edges(
     route_by_status,
     {
         "research": "research",             
-        "alive_flow": "alive_flow",         
+        "traction": "traction",
+        "market": "market",      
         "pre_mortem_flow": "idea_validator" 
     }
 )
@@ -80,10 +81,11 @@ graph.add_edge("devil", "writer")
 graph.add_edge("critic", "writer")
 graph.add_edge("writer", END)
 
-
-graph.add_edge("alive_flow", END)
+graph.add_edge("traction", "progress_writer")
+graph.add_edge("market", "progress_writer")
 graph.add_edge("idea_validator", "risk_simulator")
 graph.add_edge("risk_simulator", "pre_mortem_writer")
 graph.add_edge("pre_mortem_writer", END)
+graph.add_edge("progress_writer", END)
 
 app = graph.compile()
