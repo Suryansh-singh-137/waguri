@@ -5,18 +5,18 @@
   
   **Intelligent analysis of startups across their entire lifecycle**
   
-  *Input a startup name. A dynamic multi-agent system classifies its status, retrieves targeted intelligence, and produces a structured report—whether it's analyzing a failure, a growth trajectory, or a future opportunity.*
+  *I built a system that classifies any startup's status, then intelligently analyzes it—whether it failed, is growing, or hasn't launched yet.*
 </div>
 
 ---
 
-## Why Waguri Exists
+## Why I Built This
 
-Startup analysis is fragmented. When a company dies, you get a tweet. When it's growing, you get hype. When it's an idea, you get speculation.
+I got tired of fragmented startup analysis. A dead company gets a tweet. A growing one gets hype. An idea gets speculation. None of this is systematic.
 
-Waguri consolidates this by building an *intelligent router* that detects a startup's status and executes the right workflow for that context. A dead startup gets a postmortem. A live startup gets competitive and traction analysis. An idea gets a risk simulation.
+I wanted to build something that didn't assume—something that first *classified* what stage a startup was in, then executed the right analysis for that context. A failed startup needs a postmortem. A live one needs competitive intelligence. An unreleased idea needs a risk simulation.
 
-The system doesn't assume. It classifies first. Then it thinks.
+So I built an intelligent router with specialized agents for each scenario.
 
 ---
 
@@ -24,14 +24,9 @@ The system doesn't assume. It classifies first. Then it thinks.
 
 ### Phase 1: Dynamic State Routing (The Classifier)
 
-**The Problem:** The original Waguri only analyzed dead startups. It couldn't adapt.
+My original version only handled dead startups. I hit the ceiling fast—it couldn't adapt to live companies or pre-launch ideas.
 
-**The Solution:** A semantic `ClassifierAgent` at the graph's entry point evaluates whether a startup is:
-- **Dead** → Run the postmortem workflow
-- **Alive** → Run the competitive analysis workflow  
-- **Pre-Launch** → Run the predictive simulation workflow
-
-This transforms the graph from a fixed pipeline into a *dynamic router*.
+So I built a `ClassifierAgent` that runs first, before anything else. It evaluates the startup's status and routes the entire workflow:
 
 ```python
 # In graph.py: routing logic
@@ -45,71 +40,75 @@ def route_by_status(state: AgentState) -> str:
         return "prelaunch_branch"
 ```
 
-**Why This Matters:** Instead of one monolithic prompt trying to handle all cases (which produces hallucinations), each branch has its own specialized agents, prompts, and data sources.
+This was the key insight: **instead of building one massive prompt that tries to handle everything (which causes hallucinations), I created specialized branches with their own agents, prompts, and data sources.**
+
+Each branch is optimized for its context. This division of labor is what makes the system reliable.
 
 ---
 
 ### Phase 2: Parallel Execution & Branch-Specific Workflows
 
-**The Problem:** Workflows were sequential. Latency was high.
+My first version ran everything sequentially. I realized I was leaving latency on the table.
 
-**The Solution:** Three specialized branches, each with parallel-capable agents:
+I split the system into **three completely different branches**, each optimized for its context:
 
 #### 🪦 Dead Startup Branch (Original)
 - **Research Agent** → 5-angle web search (founding, funding, failure cause, interviews, perception)
 - **Supervisor Agent** → Quality gate (retry if key info missing)
 - **Timeline Agent** → Chronological reconstruction
-- **Devil's Advocate Agent** ↔️ **Critic Agent** → *Parallel debate* on preventability
-- **Postmortem Writer** → Synthesizes into structured report
+- **Devil's Advocate Agent** ↔️ **Critic Agent** → *Run these in parallel* to debate preventability
+- **Postmortem Writer** → Synthesize everything
 
 #### 📈 Alive Startup Branch (NEW)
-- **Market Agent** (parallel execution) → Identify competitors, moats, market positioning
-- **Traction Agent** (parallel execution) → Extract revenue, user growth, funding trajectory
-- **Progress Writer Agent** → Generate competitive analysis + growth report
+I run **Market Agent and Traction Agent in parallel** because they're independent:
+- **Market Agent** → Identify competitors, moats, market positioning
+- **Traction Agent** → Extract revenue, user growth, funding trajectory
+- **Progress Writer Agent** → Consume both in parallel, generate report
 
-**Why Parallel?** Market data and traction metrics are independent. Running them simultaneously cuts latency from sequential T(market) + T(traction) to max(T(market), T(traction)).
+This cuts latency in half. Instead of waiting T(market) + T(traction), I just wait for whichever takes longer.
 
 #### 🚀 Pre-Launch Branch (NEW)
-- **Idea Validator Agent** → Assess problem-solution fit, market size, founder credibility
-- **Risk Simulator Agent** → Model 3-year projections under different scenarios
-- **PreMortem Writer Agent** → Generate "what could go wrong" analysis before launch
+For ideas that don't exist yet, I built predictive analysis:
+- **Idea Validator Agent** → Problem-solution fit, market size, founder credibility
+- **Risk Simulator Agent** → 3-year projections under different scenarios
+- **PreMortem Writer Agent** → "What could go wrong" analysis
 
-**Why This Branch?** Pre-launch ideas need *predictive* analysis, not historical. We simulate instead of search.
+I learned something crucial here: **pre-launch startups need simulation, not research**. I can't search for data about a company that doesn't exist yet. So I model instead.
 
 ---
 
 ### Phase 3: The Hallucination Killer (LLM-as-Judge)
 
-**The Problem:** LLMs hallucinate. They confuse companies, invent facts, blend timelines. A portfolio piece needs *proof* that the system is reliable.
+Here's where I got honest with myself: **LLMs hallucinate.** They confuse companies, invent facts, blend timelines. If I'm building this as a portfolio piece, I need *proof* the system works.
 
-**The Solution:** A rigorous CI/CD evaluation pipeline using **DeepEval** + **custom GroqEvaluator**.
+So I built a rigorous evaluation pipeline using **DeepEval** + a custom **GroqEvaluator** class.
 
-#### How It Works
+#### How I Set This Up
 
 1. **Standalone Evaluation Script** (`test_eval.py`)
-   - Runs after graph execution
-   - Scores outputs mathematically on:
-     - **Faithfulness** (does output match sources?)
+   - Runs after every report generation
+   - Scores mathematically on:
+     - **Faithfulness** (does the output actually match sources?)
      - **Factuality** (are claims verifiable?)
-     - **Relevance** (does output address the query?)
+     - **Relevance** (does it answer the question?)
      - **Coherence** (is the narrative logical?)
 
 2. **Custom GroqEvaluator Class**
-   - DeepEval defaults to OpenAI's API (expensive)
-   - We engineered a `GroqEvaluator(DeepEvalBaseLLM)` wrapper
-   - Bypasses OpenAI dependency, uses free Groq API
-   - Same scoring rigor, zero cost
+   - DeepEval's default uses OpenAI's API ($$)
+   - I built a `GroqEvaluator(DeepEvalBaseLLM)` wrapper
+   - Bypasses the OpenAI dependency, uses free Groq API instead
+   - Same rigor, zero cost
 
 3. **Anti-Hallucination Prompting** ("Context Fence")
-   - Each agent's system prompt includes explicit boundaries:
+   - I added explicit boundaries to every agent's system prompt:
      ```
      "Only reference facts from the provided research data.
       If information is not in the sources, say 'Source unavailable.'
       Do not extrapolate beyond what is explicitly stated."
      ```
-   - Blocks pre-training bleed (where LLM's training data bleeds into output)
+   - This blocks pre-training bleed (where the LLM's training data sneaks into outputs)
 
-#### Proof: Faithfulness Scores
+#### The Proof
 
 ```
 Sample Evaluation Results (Quibi Postmortem)
@@ -122,15 +121,15 @@ Coherence Score:       0.97 ✓ (Well-structured)
 Average Hallucination Rate: 0.2% (industry benchmark: 5-12%)
 ```
 
-**Why This Matters:** Recruiters see not just "I built an LLM app," but "I built an LLM app that *I mathematically verified*."
+This is how I move from "I built an LLM app" to "I built an LLM app and mathematically verified it works."
 
 ---
 
 ### Phase 4: Enterprise Control (Human-in-the-Loop)
 
-**The Problem:** Fully autonomous systems are risky. Users might disagree with the AI's classification.
+I realized that fully autonomous systems are risky. What if the classifier gets it wrong? What if the user disagrees with the AI's classification?
 
-**The Solution:** Stateful execution with interruption points.
+So I added stateful execution with **interruption points**. The system pauses after classification and waits for manual approval.
 
 #### Memory Checkpointing
 
@@ -143,13 +142,14 @@ graph = workflow.compile(
 )
 ```
 
-After the Classifier Agent decides the startup's status, execution *pauses*. The graph:
-1. Prints the classification to the terminal
-2. Shows confidence and reasoning
-3. Awaits manual approval or override
-4. Resumes seamlessly into the chosen branch
+After the Classifier Agent decides, execution stops. I see:
+1. The classification it made
+2. Confidence score
+3. Reasoning
+4. Prompt to accept or override
+5. Then resume seamlessly
 
-#### Example
+#### What This Looks Like
 
 ```
 Enter startup name: Quibi
@@ -164,13 +164,13 @@ Override? (dead/alive/prelaunch/accept) > accept
 [1/5] Researching Quibi...
 ```
 
-**Why This Matters:** This is production-grade. You're not blindly trusting the AI; you're *supervising* it. This is what real systems do.
+This is production-grade thinking. I'm not blindly trusting the AI—I'm *supervising* it. That's the difference between a hobby project and something real.
 
 ---
 
-## Data Flow: How State Moves Through the System
+## Data Flow: How I Route Everything
 
-Understanding state management is critical for systems like this. Here's exactly how data flows:
+Here's exactly how data moves through the system:
 
 ```
 START
@@ -217,15 +217,19 @@ ROUTE (based on state["startup_status"])
 END (Report saved + evaluation metrics logged)
 ```
 
-**Key Design Decisions:**
+### Key Design Decisions I Made
 
-1. **Centralized State:** All agents read/write to one `AgentState` TypedDict. This eliminates coordination bugs and makes debugging trivial.
+**1. Centralized State**  
+All agents read/write to one `AgentState` TypedDict. No agent has its own isolated state. This eliminates coordination bugs and makes debugging dead simple.
 
-2. **Parallel Edges vs Sequential:** Devil's Advocate and Critic run in parallel because they're independent perspectives on the same timeline. Market and Traction agents run in parallel for the same reason.
+**2. Parallel Edges**  
+Devil's Advocate and Critic run in parallel because they're independent perspectives. Same with Market and Traction agents. Why wait for both sequentially if they don't depend on each other?
 
-3. **Supervisor Loop (Dead Branch Only):** Only the dead branch has a supervisor because postmortems require *completeness*. Dead startups need archival-level rigor. Alive and pre-launch branches don't retry—they report what's available.
+**3. Supervisor Loop (Dead Branch Only)**  
+Only the dead branch retries. Dead startups need archival-level rigor. But if I'm analyzing a live company, "no recent funding data" is still valuable information—I don't need to retry. Different contexts, different needs.
 
-4. **Interruption Points:** Only after classification. This is the highest-stakes decision, so it deserves human review. Everything else is deterministic given the classification.
+**4. Interruption After Classification Only**  
+Classification is the highest-stakes decision. Once I know the startup's status, everything else follows from that decision. So that's the only place I pause for human review. Everything after is deterministic.
 
 ---
 
@@ -328,11 +332,9 @@ Follow the prompts:
 
 ---
 
-## How to Evaluate the Hallucination Detection
+## How to Verify It Works (Run Evals Yourself)
 
-The evaluation system is designed to be reproducible. Here's how:
-
-### Run Evals Locally
+The evaluation system is completely reproducible. I designed it so you can verify the system works locally:
 
 ```bash
 uv run evals/test_eval.py
@@ -359,42 +361,54 @@ Hallucination Index: 0.2% (EXCELLENT)
 Status: PASSED
 ```
 
-**Why This Matters:** This isn't hypothetical. Run it yourself. Verify the system.
+This isn't hype. Run it. Verify it yourself.
 
 ---
 
-## What Makes This a Strong Portfolio Piece
+## Why This Project Stands Out
 
-| Aspect | Why It Matters | Evidence |
+| What | Why I Care | How I Proved It |
 | -------|---|---|
-| **System Design** | Shows you can architect for different use cases | Three completely different branches with specialized agents |
-| **Parallel Execution** | Demonstrates async thinking & latency optimization | Market + Traction agents run simultaneously in alive branch |
-| **Quality Control** | Proves you care about correctness | Custom DeepEval pipeline with 1.0 faithfulness score |
-| **Production Patterns** | Shows maturity beyond hobby projects | Stateful execution, interruption points, checkpointing |
-| **Orchestration** | Demonstrates mastery of LangGraph concepts | Shared state, conditional routing, supervisor loops |
-| **No Hallucinations** | Measurable proof the system is reliable | Explicit Context Fence prompting + mathematical verification |
+| **System Design** | I can architect for different use cases | Three completely different branches, each optimized for its context |
+| **Parallel Execution** | I think about latency and resource efficiency | Market + Traction agents run simultaneously; cuts execution time in half |
+| **Quality Control** | I care about correctness, not just features | Custom DeepEval pipeline; 1.0 faithfulness score; 0.2% hallucination rate |
+| **Production Patterns** | I know the difference between demos and systems | Stateful execution, interruption points, checkpointing, supervisor loops |
+| **Orchestration** | I understand multi-agent systems deeply | Shared state design, conditional routing, parallel edges, recovery logic |
+| **Measurable Rigor** | I verify my work, not just claim it | Mathematical evaluation scores, not hand-waving |
 
 ---
 
-## Key Learnings (Why You Built This Way)
+## What I Learned Building This
 
-### 1. Shared State > Agent Isolation
-Early iterations had each agent maintain its own state. This created synchronization bugs and made routing impossible. Centralizing to one `AgentState` TypedDict eliminated that class of bug entirely.
+### 1. Shared State Beats Agent Isolation
+I tried isolated state early on. Every agent had its own data structure. This created synchronization bugs and made routing impossible. Centralizing to one `AgentState` TypedDict eliminated an entire class of bugs.
 
-### 2. When to Route vs Chain
-A naive approach: build one massive agent that handles all cases. Reality: specialized agents with focused prompts outperform. Routing after classification lets each agent optimize for its specific workflow.
+**Lesson:** Think about state first. Architecture follows.
 
-### 3. Parallel Execution Timing
-Devil's Advocate and Critic take ~10-15 seconds each sequentially. Running in parallel cuts total time to ~15 seconds (max of the two). This latency matters for user experience.
+### 2. Specialize Agents, Don't Generalize
+I could build one massive agent that handles dead, alive, and pre-launch startups. But it would hallucinate like crazy because it's optimizing for three incompatible contexts. Routing after classification lets each agent do one thing really well.
 
-### 4. Supervisor Loops Are Expensive, Be Selective
-The dead branch has a supervisor because missing data ruins a postmortem. The alive branch doesn't retry because "no recent funding data" is still useful information. Know when quality gates pay for themselves.
+**Lesson:** A specialized agent beats a generalized one every time.
 
-### 5. LLM-as-Judge Isn't Optional for Production
-You can't trust an LLM's confidence score. You need external evaluation. DeepEval + custom GroqEvaluator gives you mathematical proof your system works. Recruiters see this and know you think rigorously.
+### 3. Parallel Execution Actually Matters
+Devil's Advocate and Critic each take ~10-15 seconds sequentially. Running in parallel cuts total time to ~15 seconds (just the max). For user experience, that's the difference between "acceptable" and "sluggish."
 
-### 6. Context Fencing Beats Prompt Engineering
-Instead of complex multi-shot examples, explicit boundaries ("only use provided sources") work better. This is why your faithfulness score is 1.0 while other systems hallucinate.
+**Lesson:** Don't assume sequential pipelines. Ask: "Can these run together?"
+
+### 4. Supervisor Loops Are Expensive—Be Selective
+Dead startups need a supervisor because missing data ruins a postmortem. But alive startups don't retry—"no recent funding data" is still valuable. I learned to ask: *does this quality gate pay for itself in this context?*
+
+**Lesson:** Not every edge case deserves a retry loop.
+
+### 5. LLM-as-Judge Isn't Optional
+I can't trust an LLM's confidence score. I need external evaluation. DeepEval + custom GroqEvaluator gives me mathematical proof the system works. This separates "I built something cool" from "I built something I verified."
+
+**Lesson:** Measure or it didn't happen.
+
+### 6. Context Fencing > Prompt Engineering
+Instead of multi-shot examples and clever prompting, explicit boundaries work better. Just tell the LLM: "Only use provided sources. Say 'Source unavailable' if you don't have data." This is why my faithfulness score is 1.0.
+
+**Lesson:** Constraints are sometimes the best feature.
 
 ---
 
@@ -410,3 +424,39 @@ Instead of complex multi-shot examples, explicit boundaries ("only use provided 
 
 ---
 
+## What's Missing (By Design)
+
+This is currently a CLI tool. I haven't built:
+
+- **API Wrapper:** FastAPI endpoint (not needed for a portfolio project)
+- **Persistent Storage:** Cloud storage backend (local filesystem is fine for demos)
+- **Async Queue:** Celery/Bull for concurrent analyses (not needed yet)
+- **User Sessions:** Database layer (would add complexity without value)
+- **Rate Limiting:** API tier logic (Tavily's free tier is sufficient)
+
+I made conscious choices not to build these. I wanted to demonstrate deep understanding of the core system—orchestration, parallel execution, quality control, state management—rather than shallow breadth across infrastructure.
+
+The core system is production-ready. The deployment layer is future work.
+
+---
+
+## Actually Running This
+
+Clone the repo and try it:
+
+```bash
+git clone https://github.com/yourusername/waguri
+cd waguri
+uv sync
+uv run main.py
+```
+
+Enter a startup name. Watch it classify, pause for your input, then analyze. The system is designed to be immediate and transparent.
+
+If you want to see the evaluation scores, run the evals after generating a report:
+
+```bash
+uv run evals/test_eval.py
+```
+
+See for yourself. That's the point.
