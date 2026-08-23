@@ -11,10 +11,10 @@ load_dotenv()
 
 # --- 1. Define the Custom Groq LLM Wrapper ---
 class GroqEvaluator(DeepEvalBaseLLM):
-    def __init__(self, model_name: str = "llama-3.3-70b-versatile"):
+    def __init__(self, model_name: str = "openai/gpt-oss-120b"):
         self.model_name = model_name
         # Initialize the LangChain Groq client
-        self.chat_model = ChatGroq(model_name=self.model_name, temperature=0.0)
+        self.chat_model = ChatGroq(model_name=self.model_name, temperature=0.0,max_tokens = 8000)
 
     def load_model(self):
         return self.chat_model
@@ -41,7 +41,7 @@ def test_correctness():
     data = load_test_case()
     
     # Initialize our custom Groq model
-    groq_judge = GroqEvaluator("llama-3.3-70b-versatile")
+    groq_judge = GroqEvaluator("openai/gpt-oss-120b")
     
     # Pass 'groq_judge' directly to the model parameter instead of 'gpt-4o'
     vc_structure_metric = GEval(

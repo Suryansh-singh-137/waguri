@@ -3,7 +3,7 @@ from llm import llm
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_groq import ChatGroq
 
-supervisor_llm = ChatGroq(model="llama-3.1-8b-instant") 
+supervisor_llm = ChatGroq(model="openai/gpt-oss-120b") 
 def supervisor_agent(state: Researchstate):
     print(" Supervisor evaluating research quality...")
     

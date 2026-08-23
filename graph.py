@@ -13,6 +13,7 @@ from agents.pre_mortem_writer import preMortemWriterAgent
 from  agents.market import marketAgent
 from  agents.traction import tractionAgent
 from  agents.progress_writer import progressWriterAgent
+from  langgraph.checkpoint.memory import MemorySaver
 
 
 
@@ -36,6 +37,10 @@ def route_by_status(state: Researchstate) -> str:
     return "research" # Safety fallback
 
 graph = StateGraph(Researchstate)
+
+#  Initialize the checkpointer
+memory = MemorySaver()
+
 
 # Add all nodes
 graph.add_node("classifier", classifierAgent)
@@ -88,4 +93,7 @@ graph.add_edge("risk_simulator", "pre_mortem_writer")
 graph.add_edge("pre_mortem_writer", END)
 graph.add_edge("progress_writer", END)
 
-app = graph.compile()
+app = graph.compile(
+    checkpointer=memory,
+    interrupt_after=["classifier"] 
+)
